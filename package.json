@@ -1,0 +1,16 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "我的前端小册",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "keywords": [],
+  "author": "songzhipengmune@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "vuepress": "^1.0.2"
+  }
+}
