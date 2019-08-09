@@ -19,7 +19,7 @@ module.exports = {
         children: [
           '/js/',
           '/browser/',
-          '/performace/',
+          '/performance/',
           '/safety/',
           '/framework/',
           '/Vue/',
