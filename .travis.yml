@@ -5,8 +5,9 @@ script:
   - npm run docs:build
 deploy:
   provider: pages
+  edge:
+    branch: v1.8.47
   skip-cleanup: true
-  target-branch: gh-pages
   local_dir: docs/.vuepress/dist
   github-token: $GITHUB_TOKEN # a token generated on github allowing travis to push code on you repository
   keep-history: true
