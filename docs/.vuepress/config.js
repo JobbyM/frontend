@@ -1,4 +1,5 @@
 module.exports = {
+  base: '/frontend/',
   title: '我的前端小册',
   description: '我的前端小册',
   themeConfig: {
