@@ -7,7 +7,13 @@ module.exports = {
       { text: 'HOME', link: '/' },
       { text: '前端', link: '/js/' },
       { text: '计算机通识', link: '/network/' },
-      { text: 'GitHub', link: 'https://jobbym.github.io' }
+      { 
+        text: 'GitHub', 
+        items: [
+          { text: '博客', link: 'https://jobbym.github.io/' },
+          { text: 'JavaScript 进阶问题列表', link: 'https://github.com/lydiahallie/javascript-questions/blob/master/zh-CN/README-zh_CN.md' },
+        ]
+      }
     ],
     displayAllHeaders: false,
     sidebarDepth: 2,
