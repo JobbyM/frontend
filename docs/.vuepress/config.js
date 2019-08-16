@@ -10,6 +10,7 @@ module.exports = {
       { 
         text: 'GitHub', 
         items: [
+          { text: '查看源码', link: 'https://github.com/JobbyM/frontend' },
           { text: '博客', link: 'https://jobbym.github.io/' },
           { text: 'JavaScript 进阶问题列表', link: 'https://github.com/lydiahallie/javascript-questions/blob/master/zh-CN/README-zh_CN.md' },
         ]
@@ -43,5 +44,13 @@ module.exports = {
       }
     ],
     lastUpdated: 'Last Updated'
-  }
+  },
+  plugins: {
+    '@vuepress/medium-zoom': {
+      selector: '.theme-default-content :not(a) > img',
+      options: {
+        margin: 16
+      }
+    }
+  } 
 }
