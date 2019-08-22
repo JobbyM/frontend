@@ -13,6 +13,7 @@ module.exports = {
           { text: '查看源码', link: 'https://github.com/JobbyM/frontend' },
           { text: '博客', link: 'https://jobbym.github.io/' },
           { text: 'JavaScript 进阶问题列表', link: 'https://github.com/lydiahallie/javascript-questions/blob/master/zh-CN/README-zh_CN.md' },
+          { text: '每日*壹题', link: 'https://muyiy.vip/question/'}
         ]
       }
     ],
@@ -40,6 +41,12 @@ module.exports = {
           '/network/',
           '/datastruct/',
           '/algorithm/',
+        ]
+      },
+      {
+        title: '参考文档',
+        children: [
+          '/reference/'
         ]
       }
     ],
