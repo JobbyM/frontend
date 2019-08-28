@@ -30,6 +30,7 @@
 ## 框架
 ### 书籍
 ### 网络文章
+1. [MVVM 模式理解](https://www.cnblogs.com/goloving/p/8520030.html)
 #### React
 1. [Deep In React之浅谈 React Fiber 架构(一)](https://mp.weixin.qq.com/s/26h37gBOw2gjZ4ry3AYI6A)
 2. [详解 React 16 的 Diff 策略](https://mp.weixin.qq.com/s/lWyqHfHFAstS6AhfaHe7Iw)
