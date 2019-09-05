@@ -35,7 +35,7 @@ Cache-control: max-age=30
 但是如果在本地打开缓存文件，就会造成 `Last-Modified` 被修改，所以在 HTTP/1.1 出现了 `ETag` 。
 
 #### ETag 和 If-None-Match
-`ETag` 类似于文件指纹， `If-None-Math` 会将当前 `ETag` 发送给服务器，询问该资源 `ETag` 是否变动，有变动的话就将新的资源发送回来。并且 `ETag` 优先级比 `Last-Modified` 高。
+`ETag` 类似于文件指纹， `If-None-Match` 会将当前 `ETag` 发送给服务器，询问该资源 `ETag` 是否变动，有变动的话就将新的资源发送回来。并且 `ETag` 优先级比 `Last-Modified` 高。
 
 ### 选择合适的缓存策略
 对于大部分的场景都可以使用强缓存配合协商缓存解决，但是在一些特殊的地方可能需要选择特殊的缓存策略
