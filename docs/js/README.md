@@ -388,10 +388,10 @@ function A () {
 
 经典面试题，循环中使用闭包解决 `var` 定义函数的问题
 ```js
-for ( var i = 1, i <= 5; i++ ) {
+for ( var i = 1; i <= 5; i++ ) {
   setTimeout( function timer() {
     console.log(i)
-  }, i*1000, i)
+  }, i* 1000)
 } 
 ```
 
@@ -408,10 +408,10 @@ for ( var i = 1; i <= 5; i++ ) {
 } 
 ```
 
-第二种就是使用 `setTimeout` 的第三个参数
+第二种就是使用 `setTimeout` 的第三个参数（定时器启动时候，第三个以后的参数是作为第一个 func() 的参数传进去）
 ```js
-for ( var i = 1 i <= 5; i++ ) {
-  setTimeout( function timer() {
+for ( var i = 1; i <= 5; i++ ) {
+  setTimeout( function timer(i) {
     console.log(i)
   }, i* 1000, i)
 } 
@@ -419,7 +419,7 @@ for ( var i = 1 i <= 5; i++ ) {
 
 第三种就是使用 `let` 定义 `i` 了
 ```js
-for ( let i = 1, i <= 5; i++ ) {
+for ( let i = 1; i <= 5; i++ ) {
   setTimeout( function timer() {
     console.log(i)
   }, i* 1000)
