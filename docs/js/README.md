@@ -391,7 +391,7 @@ function A () {
 for ( var i = 1, i <= 5; i++ ) {
   setTimeout( function timer() {
     console.log(i)
-  }, i* 1000)
+  }, i*1000, i)
 } 
 ```
 
@@ -399,7 +399,7 @@ for ( var i = 1, i <= 5; i++ ) {
 
 解决办法，第一种使用闭包
 ```js
-for ( var i = 1, i <= 5; i++ ) {
+for ( var i = 1; i <= 5; i++ ) {
   (function (j) {
     setTimeout( function timer() {
       console.log(j)
@@ -410,7 +410,7 @@ for ( var i = 1, i <= 5; i++ ) {
 
 第二种就是使用 `setTimeout` 的第三个参数
 ```js
-for ( var i = 1, i <= 5; i++ ) {
+for ( var i = 1 i <= 5; i++ ) {
   setTimeout( function timer() {
     console.log(i)
   }, i* 1000, i)
