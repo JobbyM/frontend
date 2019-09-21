@@ -59,5 +59,8 @@ module.exports = {
         margin: 16
       }
     }
+  },
+  markdown: {
+    lineNumbers: true
   } 
 }
