@@ -1263,7 +1263,7 @@ test()
 
 上面代码会先打印 `finish` 然后再打印 `object` 。因为 `await` 会等待 `sleep` 函数 `resolve` ，所以即使后面是同步代码，也不会先去执行通过代码再来执行异步代码。
 
-`async` 和 `await` 相比直接使用 `Promise` 来说，优势在于处理 `then` 的调用链，能够更清晰准确的写出代码。缺点在于滥用 `await` 可能会导致性能问题，因为 `await` 会阻塞代码，也许之后的异步diam并不依赖前者，但仍然需要等待前者完成，导致代码失去了并发性。
+`async` 和 `await` 相比直接使用 `Promise` 来说，优势在于处理 `then` 的调用链，能够更清晰准确的写出代码。缺点在于滥用 `await` 可能会导致性能问题，因为 `await` 会阻塞代码，也许之后的异步代码并不依赖前者，但仍然需要等待前者完成，导致代码失去了并发性。
 
 下面来看一个使用 `await` 的代码
 ```js
@@ -1294,7 +1294,7 @@ let p = new Proxy(target, handler)
 // `handler` 用来自定义对象中的操作
 ```
 
-可以很方便的使用 Proxy 来实现一个数据版定和监听
+可以很方便的使用 Proxy 来实现一个数据绑定和监听
 ```js
 let onWatch = (obj, setBind, getLogger) => {
   let handler = {
