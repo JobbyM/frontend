@@ -32,6 +32,14 @@ typeof null // => 'object'
 ```
 PS：为什么会出现这种情况呢？因为在JS 的最初版本中，使用的是32 位系统，为了性能考虑使用低位存储了变量的类型信息，`000` 开头代表是对象，然而 `null` 表示为全零，所以将它错误的判断为 `object` 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。
 
+PS2：另一种说法是 `typeof null` 返回了 `object` , 并不是 `null` ,尽管Null 它自己就是一种类型。`null` 意味着“不存在的对象”的值，而 `undefined` 代表着“不存在”的值。
+
+![typeofnull](./images/4.jpg)
+
+跟着这条思路，Brendan Eich 按照 Java 的精神将 JavaScript 中的 `typeof` 运算设计为任何值都返回 `object` ，比如所有的对象和 `null`。这就是规范中有个单独的Null 类型，但是`typeof null === 'object'` 依然成立。
+
+![typeofnull===object](./images/5.jpg)
+
 `typeof` 对于对象，除了函数都会显示 `object`
 ```js
 typeof [] // => 'object'
