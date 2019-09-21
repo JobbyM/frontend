@@ -1,8 +1,8 @@
 # JS
 ## 内置类型
-JS 中分为七 种内置类型，七种内置类型又分为两大类型：基本类型和对象（Object）。
+JS 中分为八 种内置类型，七种内置类型又分为两大类型：基本类型和对象（Object）。
 
-基本类型有六 种：`null`，`undefined`，`boolean`，`number`,`string`,`symbol`。
+基本类型有七 种：`null`，`undefined`，`boolean`，`number`, `bigint`, `string`,`symbol`。
 
 其中JS 的数字类型是浮点类型的，没有整型。并且浮点类型基于IEEE 754标准实现，在使用中会遇到某些Bug。`NaN` 也属于 `number` 类型，并且 `NaN` 不等于自身。
 
@@ -18,6 +18,7 @@ console.log(copy.name) // => Bar
 `typeof` 对于基本类型，除了 `null` 都可以显示正确的类型
 ```js
 typeof 1 // => 'number'
+typeof 1n // => 'binint'
 typeof '1' // => 'string'
 typeof undefined // => 'undefined'
 typeof true // => 'boolean'
@@ -672,7 +673,7 @@ const debounce = (func, wait = 50) => {
     }, wait)
   }
 }
-// 不难看出如果用户调用该函数的间隔小于wait 的情况下，上一次的时间还未到就被清楚了，并不会执行函数
+// 不难看出如果用户调用该函数的间隔小于wait 的情况下，上一次的时间还未到就被清除了，并不会执行函数
 ```
 
 这是一个简单版的防抖，但是有缺陷，这个防抖只能在最后调用。一般的防抖会有 immediate 选项，表示是否立即调用。这两者的区别，举个例子来说：
