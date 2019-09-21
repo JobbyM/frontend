@@ -1204,10 +1204,10 @@ function test () {
 //  parseInt('3', 2) => NaN
 ```
 
-`FlatMap` 和 `map` 的作用几乎是相同的，但是对于多维数组来说，会将原数组降维。可以将 `FlatMap` 看成是 `map` + `flatten` ，目前该函数在浏览器中还不支持。
+`FlatMap` 和 `map` 的作用几乎是相同的，但是对于多维数组来说，会将原数组降维。可以将 `FlatMap` 看成是 `map` + `flatten` ，[目前该函数在浏览器中的支持情况](https://caniuse.com/#search=FlatMap)。
 ```js
 [1, [2], 3].flatMap((v) => v + 1)
-// => [2, 3, 4]
+// => [2, '21', 4]
 ```
 
 如果想将一个多维数组彻底的降维，可以这样实现
