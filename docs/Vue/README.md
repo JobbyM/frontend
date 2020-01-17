@@ -67,7 +67,7 @@ export function nextTick(cb?: Function, ctx?: Object) {
 
 ## 声明周期分析
 生命周期函数就是组件在初始化或者数据更新时会触发的钩子函数。
-![lifecycle](./images/0.png)
+![lifecycle](./images/vue.jpg)
 
 在初始化时，会调用以下代码，生命周期就是通过 `callHook` 调用的
 ```js
