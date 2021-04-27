@@ -387,8 +387,8 @@ self.addEventListener('fetch', e => {
 ## 渲染机制
 浏览器的渲染机制一般分为以下几个步骤
 
-1. 处理 HTML 并构建 DOM 树
-2. 处理 CSS 构建 CSSOM 树
+1. 处理 HTML(HyperText Markup Language) 并构建 DOM(Document Object Model) 树
+2. 处理 CSS(Cascading Style Sheets) 构建 CSSOM 树
 3. 将 DOM 和 CSSOM 合并成一个渲染树
 4. 根据渲染树来布局，计算每个节点的位置
 5. 调用 GPU 绘制，合成图层，显示在屏幕上
