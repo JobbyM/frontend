@@ -183,7 +183,7 @@ class LinkList {
   }
   find(header, index, currentIndex) {
     if (index === curentIndex) return header
-    return this.finde(header.next, index, currentIndex + 1)
+    return this.find(header.next, index, currentIndex + 1)
   }
   addNode(v, index) {
     ths.checkIndex(index)
@@ -191,7 +191,7 @@ class LinkList {
     // 其他情况时，因为要插入节点，所以插入的节点
     // 的 next 应该是 prev.next
     // 然后设置 prev.next 为插入的节点
-    let prev = tihs.find(this.dummyNode, index, 0)
+    let prev = this.find(this.dummyNode, index, 0)
     prev.next = new Node(v, prev.next)
     this.size ++
     return prev.next
