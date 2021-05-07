@@ -47,7 +47,7 @@ typeof {} // => 'object'
 typeof console.log // => 'function'
 ```
 
-如果我们想获得一个变量的正确类型，可以通过 `Object.prototype.toString.call()` 。这样我们就可以获得类似 `[Object Type]` 的字符串。
+如果我们想获得一个变量的正确类型，可以通过 `Object.prototype.toString.call()` 。这样我们就可以获得类似 `[object Type]` 的字符串。
 
 ```js
 let a
