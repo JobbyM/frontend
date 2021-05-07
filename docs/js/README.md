@@ -1,6 +1,6 @@
 # JS
 ## 内置类型
-JS 中分为八 种内置类型，七种内置类型又分为两大类型：基本类型和对象（Object）。
+JS 中分为八 种内置类型，八 种内置类型又分为两大类型：基本类型和对象（Object）。
 
 基本类型有七 种：`null`，`undefined`，`boolean`，`number`, `bigint`, `string`,`symbol`。
 
