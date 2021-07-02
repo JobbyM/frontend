@@ -827,13 +827,10 @@ Super.prototype.getNumber = function () {
 
 
 function Sub() {}
+Sub.prototype = Object.create(Super.prototype)
+Sub.prototype.constructor = Sub
+
 let s = new Sub()
-Sub.prototype = Object.create(Super.prototype, {
-  value: Sub,
-  emumerable: false,
-  writable: true,
-  configurable: true
-})
 ```
 
 以上继承实现思路就是将子类的原型设置为父类的原型
