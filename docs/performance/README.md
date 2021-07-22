@@ -181,3 +181,50 @@ Cache-control: max-age=30
   </body>
 </html>
 ```
+
+对于耗时较长的计算，比如有一个非常长的数组要对其项进行相加，此时导致页面出现卡顿，如何解决这个问题。
+```js
+    function calcLong(arr) {
+        return new Promise((resolve, reject) => {
+            console.log(arr)
+            let result = 0
+            const total = arr.length
+            const once = 100
+
+            const loopCount = Math.ceil(total / 100)
+            let countOfLoop = 0 // 计数次数
+
+            function chunk() {
+                console.log('chunk:' + countOfLoop);
+                for (var i = 0; i < once && i < arr.length; i++) {
+                    result += arr[i];
+                }
+                arr.splice(0, once)
+                console.log('arr', arr);
+                countOfLoop++
+                loop()
+            }
+
+            function loop() {
+                console.log('loop');
+                console.log('loop:', 'countOfLoop:' + countOfLoop, ';loopCount：' + loopCount)
+                if (countOfLoop < loopCount - 1) {
+                    requestAnimationFrame(chunk)
+                }  else {
+                    resolve(result)
+                }
+            }
+            chunk()
+        })
+
+    }
+
+    let f = length => Array.from({ length }).map((v, k) => k);
+    let arr = f(1000)
+    calcLong(arr).then(val => {
+        console.log('calcLong...')
+        console.log(val)
+    }).catch(err => {
+        console.log('err:' + err);
+    })
+```
