@@ -186,6 +186,41 @@ console.log('script end')
 
 通过上述的Event Loop 顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作 DOM 的话，为了更快的界面响应，我们可以把操作 DOM 放入微任务中。
 
+
+这是另一个微任务、宏任务的相关的
+```js
+let first = () => (new Promise((resovle, reject) => {
+    console.log(3);
+    let p = new Promise((resovle, reject) => {
+        console.log(7);
+        setTimeout(() => {
+            console.log(5);
+            resovle(6);
+        }, 0)
+        resovle(1);
+    });
+    resovle(2);
+    p.then((arg) => {
+        console.log(arg);
+    });
+
+}));
+first().then((arg) => {
+    console.log(arg);
+});
+console.log(4);
+```
+
+输出
+```js
+3
+7
+4
+1
+2
+5
+```
+
 ### Node 中的Event Loop
 Node 中的 Event Loop 和浏览器总中的不相同。
 
