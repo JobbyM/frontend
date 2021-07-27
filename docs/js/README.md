@@ -267,6 +267,103 @@ console.log(a()()())
 
 箭头函数其实是没有 `this` 的，这个函数中的 `this` 只取决于他外面的第一个不是箭头函数的函数的 `this` 。在这个例子中，因为调用 `a` 符合前面代码中的第一个情况，所以 `this` 是 `window`。并且 `this` 一旦绑定了上下文，就不会被任何代码改变。
 
+## 箭头函数
+箭头函数同普通函数的区别
+### 箭头函数是匿名函数，不能作为构造函数，不能使用 new
+```js
+let a = () => { console.log(111)} 
+a()
+
+let fn = new a()
+```
+
+输出
+![Uncaught TypeError](./images/6.png)
+
+### 箭头函数不绑定 arguments，取而代之用 rest 参数...解决
+```js
+function A(a){ console.log(arguments)}
+A(2,'sdas','asda')
+
+let B = (b)=>{
+  console.log(arguments);
+}
+B(2,92,32,32); 
+
+let C = (...c) => {
+  console.log(c);
+}
+C(3,82,32,11323);
+```
+
+输出
+![Uncaught ReferenceError](./images/7.png)
+
+### this 的作用域不同，箭头函数不绑定 this，会捕获其所在的上下文的 this 值，作为自己的 this 值。
+```js
+var obj = {
+  a: 10,
+  b: () => {
+    console.log(this.a); // undefined
+    console.log(this); // Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}
+  },
+  c: function() {
+    console.log(this.a); // 10
+    console.log(this); // {a: 10, b: ƒ, c: ƒ}
+  }
+}
+obj.b(); 
+obj.c();
+```
+
+输出
+![Window ](./images/8.png)
+
+普通函数的 this 指向调用他的对象
+箭头函数的 this 指向调用父级的对象，如果父级作用于还是箭头函数，就继续向上找，直到 window
+
+### 箭头函数没有原型属性
+```js
+var a = ()=>{
+  return 1;
+}
+
+function b(){
+  return 2;
+}
+
+console.log(a.prototype);  // undefined
+console.log(b.prototype);   // {constructor: ƒ}
+```
+
+输出
+![undefined {constructor: f}](./images/9.png)
+
+### 箭头函数通过 call()  或   apply() 方法调用一个函数时，只传入了一个参数，对 this 并没有影响。
+```js
+let obj2 = {
+    a: 10,
+    b: function(n) {
+        let f = (n) => n + this.a;
+        return f(n);
+    },
+    c: function(n) {
+        let f = (n) => n + this.a;
+        let m = {
+            a: 20
+        };
+        return f.call(m,n);
+    }
+};
+console.log(obj2.b(1));  // 11
+console.log(obj2.c(1)); // 11
+```
+
+输出
+![arrow call apply](./images/10.png)
+
+### 箭头函数不能当做 Generator 函数,不能使用 yield 关键字
+
 ## 执行上下文
 当执行 JS 代码时，会产生三种执行上下文
 * 全局执行上下文
