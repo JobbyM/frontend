@@ -733,6 +733,47 @@ var obj = {a: 1, b: {
 })()
 ```
 
+通过递归来实现深拷贝
+
+为了解决循环引用问题，我们可以额外开辟一个存储空间，来存储当前对象和拷贝对象的对应关系，当需要拷贝当前对象时，先去存储空间中找，有没有拷贝过这个对象，如果有的话直接返回，如果没有的话继续拷贝，这样就巧妙化解的循环引用的问题。
+
+这个存储空间，需要可以存储 `key-value` 形式的数据，且 `key` 可以是一个引用类型，我们可以选择 Map 这种数据结构：
+
+* 检查 map 中有无克隆过的对象
+* 有 – 直接返回
+* 没有 – 将当前对象作为 key, 克隆对象作为
+* 继续克隆
+
+```js
+function deepClone(target, map = new Map()) {
+	if (typeof target === 'object') {
+		let cloneTarget = Array.isArray(target) ? [] : {}
+		if (map.get(target)) {
+			return map.get(target)
+		}
+		map.set(target, cloneTarget)
+		for (const key in target) {
+			cloneTarget[key] = deepClone(target[key], map)
+		}
+		return cloneTarget
+	} else {
+		return target
+	}
+}
+var target = {
+    field1: 1,
+    field3: {
+        child: 'child'
+    },
+    field4: [2, 4, 8]
+};
+target.target = target;
+
+var cloneTarget = deepClone(target)
+cloneTarget.field4[1] = 333
+console.log(target, cloneTarget)
+```
+
 ## 模块化
 在有 Babel 的情况下，我们可以直接使用 ES6 的模块化
 ```js
