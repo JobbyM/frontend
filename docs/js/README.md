@@ -1008,6 +1008,39 @@ _.throttle = function (func, wait, options) {
 }
 ```
 
+### 1. 时间戳版
+```js
+function throttle(func, delay) {
+    var last = 0
+    return function(){
+        var now = Date.now()
+        if (now >= delay + last) {
+            func.apply(this, arguments)
+            last = now
+        } else {
+            console.log('距离上次调用的时间差不满足要求哦')
+        }
+    }
+}
+```
+
+### 2. 定时器版
+```js
+function throttle(func, delay) {
+    var timer = null
+    return function(){
+        if(!timer){
+            func.apply(this, arguments)
+            timer = setTimeout(()=>{
+                timer = null
+            }, delay)
+        } else {
+            console.log('上一个定时器尚未完成')
+        }
+    }
+}
+```
+
 ## 继承
 
 在 ES5 中，我们可以使用如下方式解决继承的问题
