@@ -102,3 +102,124 @@ span { /* thing to center */
   margin: auto;
 }
 ```
+
+## 如何实现左右固定 300px , 中间宽度自适应？
+有如下 HTML 结构
+```html
+<div class="wrapper">
+    <div class="item left">左</div>
+    <div class="item right">右</div>
+    <div class="item center">中</div>
+</div>
+```
+
+公有样式，设置高，设置左右宽度固定 300px ，左右为红色，中间为黄色
+```css
+body { 
+    margin: 0;
+}
+.item {
+    height: 400px;
+}
+.left,
+.right {
+    width: 300px;
+    background: #f00;
+}
+.center {
+    background: yellow;
+}
+```
+
+### 一、双浮动法 + BFC
+```css
+.left { 
+    float: left;
+}
+.right {
+    float: right;
+}
+```
+
+```css
+.center {
+    overflow: hidden;
+}
+```
+### 二、绝对定位法
+```css
+.left {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.center {
+    margin: 0 300px;
+}
+```
+### 三、弹性盒子
+首先需要调整 html 布局
+```html
+<div class="wrapper">
+    <div class="item left">左</div>
+    <div class="item center">中</div>
+    <div class="item right">右</div>
+</div>
+```
+
+接着，父容器设置 `display: flex`，左右设置 300px, center 把 flex 设置为1 ，效果是否实现了呢?
+```css
+.wrapper {
+    display: flex;
+}
+.center {
+    flex: 1;
+}
+```
+
+浏览器运行，看上去是对的 ，但实际上屏幕缩小后左右不是固定的 300px，宽度会被压缩。
+还需要再添加如下样式：
+```css
+.left , .right {
+    flex-shrink: 0; /* 等同于 flex: 0 0 auto;  */
+}
+```
+### 四、网格布局 grid
+最简单的网格布局
+```css
+.wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+}
+```
+### 五、表格布局
+```css
+.wrapper {
+    width: 100%;
+    display: table;
+}
+.wrapper>.item:not(.center) {
+    display: table-cell;
+}
+```
+把左右元素设置为单元格即可,**不过该方法在屏幕缩小时,左右固定300px会被压缩**
+
+### 六、CSS 计算
+```css
+.wrapper {
+    white-space: nowrap;
+    font-size: 0;
+    -webkit-text-size-adjust: none;
+}
+.item {
+    display: inline-block;
+}
+.center {
+    width: calc( 100vw - 300px * 2 )
+}
+```
