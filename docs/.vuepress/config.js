@@ -27,6 +27,7 @@ module.exports = {
         path: '/js/',
         collapsable: false,
         children: [
+          '/css/',
           '/js/',
           '/browser/',
           '/performance/',
