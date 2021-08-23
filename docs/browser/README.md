@@ -77,7 +77,7 @@ node.addEventListener(
 ## 跨域
 因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。
 
-我们可以通过以下几种常用方法解决跨域的问题
+我们可以通过以下几种常用方法解决跨域的问题 [参考跨域实现](https://www.cnblogs.com/fundebug/p/10329202.html)
 
 ### JSONP
 JSONP 的原理很简单，就是利用 `<script>` 标签没有跨域限制的漏洞。当需要通讯时，通过 `<script>` 标签指向一个需要访问的地址并提供一个回调函数来接收数据。
@@ -108,11 +108,39 @@ CORS 需要浏览器和后端同时支持。IE 8 和 9 需要通过 `XDomainRequ
 
 服务端设置 `Access-Control-Allow-Origin` 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符（*）则表示所有网站都可以访问资源。
 
-### document.domain
+### document.domain + iframe
 该方式只能用于二级域名相同的情况下，比如 `www.abc.com` 和 `api.abc.com` 适用于该方式。
 
 只需要给页面添加 `document.domain = 'abc.com'` 表示二级域名都相同就可以实现跨域
 
+实现原理：两个页面都通过 js 强制设置 document.domain 为基础主域，就实现了同域。
+
+我们看个例子：页面 `www.abc.com:3000/a.html` 获取页面 `api.abc.com:3000/b.html` 中 a 的值
+
+a.html
+```html
+<body>
+ helloa
+  <iframe src="api.abc.com:3000/b.html" frameborder="0" onload="load()" id="frame"></iframe>
+  <script>
+    document.domain = 'abc.com'
+    function load() {
+      console.log(frame.contentWindow.a);
+    }
+  </script>
+</body>
+```
+
+b.html
+```html
+<body>
+   hellob
+   <script>
+     document.domain = 'abc.com'
+     var a = 100;
+   </script>
+</body>
+```
 ### postMessage
 这种方式通常用于获取嵌入页面中的第三方页面数据。一个页面发送消息，另一个页面判断来源并接收消息
 ```js
@@ -126,6 +154,138 @@ mc.addEventListener('message', event => {
     console.log('验证通过')
   }
 })
+```
+
+接下来我们看个例子： `http://localhost:3000/a.html` 页面向 `http://localhost:4000/b.html` 传递“我爱你”,然后后者传回"我不爱你"。
+
+a.html
+```html
+  <iframe src="http://localhost:4000/b.html" frameborder="0" id="frame" onload="load()"></iframe> //等它加载完触发一个事件
+  //内嵌在http://localhost:3000/a.html
+    <script>
+      function load() {
+        let frame = document.getElementById(‘frame‘)
+        frame.contentWindow.postMessage(‘我爱你‘, ‘http://localhost:4000‘) //发送数据
+        window.onmessage = function(e) { //接受返回数据
+          console.log(e.data) //我不爱你
+        }
+      }
+    </script>
+```
+
+b.html
+```html
+  window.onmessage = function(e) {
+    console.log(e.data) //我爱你
+    e.source.postMessage(‘我不爱你‘, e.origin)
+ }
+```
+
+### WebSocket
+Webocket 是 HTML5 的一个持久化的协议，它实现了浏览器与服务器的全双工通信，同时也是跨域的一种解决方案。WebSocket 和 HTTP 都是应用层协议，都基于 TCP 协议。但是 WebSocket 是一种双向通信协议，在建立连接之后，WebSocket 的 server 与 client 都能主动向对方发送或接收数据。同时，WebSocket 在建立连接时需要借助 HTTP 协议，连接建立好了之后 client 与 server 之间的双向通信就与 HTTP 无关了。
+
+### Node 中间件代理(两次跨域)
+实现原理：同源策略是浏览器需要遵循的标准，而如果是服务器向服务器请求就无需遵循同源策略。
+代理服务器，需要做以下几个步骤：
+
+1. 接受客户端请求 。
+2. 将请求 转发给服务器。
+3. 拿到服务器 响应 数据。
+4. 将 响应 转发给客户端。
+
+![Node Middleware Agent](./images/7.png)
+
+### nginx 反向代理
+实现原理类似于 Node 中间件代理，需要你搭建一个中转 nginx 服务器，用于转发请求。
+
+使用 nginx 反向代理实现跨域，是最简单的跨域方式。只需要修改 nginx 的配置即可解决跨域问题，支持所有浏览器，支持 session，不需要修改任何代码，并且不会影响服务器性能。
+
+实现思路：通过 nginx 配置一个代理服务器（域名与 domain1 相同，端口不同）做跳板机，反向代理访问 domain2 接口，并且可以顺便修改 cookie 中 domain 信息，方便当前域 cookie 写入，实现跨域登录。
+
+先下载 nginx，然后将nginx目录下的 nginx.conf 修改如下:
+```bash
+// proxy服务器
+server {
+    listen       81;
+    server_name  www.domain1.com;
+    location / {
+        proxy_pass   http://www.domain2.com:8080;  #反向代理
+        proxy_cookie_domain www.domain2.com www.domain1.com; #修改cookie里域名
+        index  index.html index.htm;
+
+        # 当用webpack-dev-server等中间件代理接口访问nignx时，此时无浏览器参与，故没有同源限制，下面的跨域配置可不启用
+        add_header Access-Control-Allow-Origin http://www.domain1.com;  #当前端只跨域不带cookie时，可为*
+        add_header Access-Control-Allow-Credentials true;
+    }
+}
+```
+
+### window.name + iframe
+window.name 属性的独特之处：name 值在不同的页面（甚至不同域名）加载后依旧存在，并且可以支持非常长的 name 值（2MB）。
+
+其中 a.html 和 b.html 是同域的，都是 `http://localhost:3000` ; 而 c.html 是 `http://localhost:4000`
+
+a.html(`http://localhost:3000/b.html`)
+```html
+  <iframe src="http://localhost:4000/c.html" frameborder="0" onload="load()" id="iframe"></iframe>
+  <script>
+    let first = true
+    // onload事件会触发2次，第1次加载跨域页，并留存数据于window.name
+    function load() {
+      if(first){
+      // 第1次onload(跨域页)成功后，切换到同域代理页面
+        let iframe = document.getElementById(‘iframe‘);
+        iframe.src = ‘http://localhost:3000/b.html‘;
+        first = false;
+      }else{
+      // 第2次onload(同域b.html页)成功后，读取同域window.name中数据
+        console.log(iframe.contentWindow.name);
+      }
+    }
+  </script>
+```
+b.html 为中间代理页，与 a.html 同域，内容为空。
+
+c.html(`http://localhost:4000/c.html`)
+```html
+  <script>
+    window.name = ‘我不爱你‘  
+  </script>
+```
+
+总结：通过 iframe 的 src 属性由外域转向本地域，跨域数据即由 iframe 的 window.name 从外域传递到本地域。这个就巧妙地绕过了浏览器的跨域访问限制，但同时它又是安全操作
+
+
+### location.hash + iframe
+实现原理： a.html 欲与 c.html 跨域相互通信，通过中间页 b.html 来实现。 三个页面，不同域之间利用 iframe 的 location.hash 传值，相同域之间直接 js 访问来通信。
+
+具体实现步骤：一开始 a.html 给 c.html 传一个 hash 值，然后 c.html 收到 hash 值后，再把 hash 值传递给 b.html，最后 b.html 将结果放到 a.html 的 hash 值中。
+同样的，a.html 和 b.html 是同域的，都是 `http://localhost:3000;` 而 c.html 是 `http://localhost:4000`
+
+a.html
+```html
+  <iframe src="http://localhost:4000/c.html#iloveyou"></iframe>
+  <script>
+    window.onhashchange = function () { //检测hash的变化
+      console.log(location.hash);
+    }
+  </script>
+```
+
+b.html
+```html
+  <script>
+    window.parent.parent.location.hash = location.hash 
+    //b.html将结果放到a.html的hash值中，b.html可通过parent.parent访问a.html页面
+  </script>
+```
+
+c.html
+```js
+  console.log(location.hash);
+  let iframe = document.createElement(‘iframe‘);
+  iframe.src = ‘http://localhost:3000/b.html#idontloveyou‘;
+  document.body.appendChild(iframe);
 ```
 
 ## EventLoop
