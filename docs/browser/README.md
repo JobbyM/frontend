@@ -630,6 +630,17 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 * 定位或者浮动
 * 盒模型
 
+
+现代的浏览器都是很聪明的，由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列。但是！**当你获取布局信息的操作的时候，会强制队列刷新**，比如当你访问以下属性或者使用以下方法：
+
+* offsetTop、offsetLeft、offsetWidth、offsetHeight
+* scrollTop、scrollLeft、scrollWidth、scrollHeight
+* clientTop、clientLeft、clientWidth、clientHeight
+* getComputedStyle()
+* getBoundingClientRect()
+
+以上属性和方法都需要返回最新的布局信息，因此浏览器不得不清空队列，触发`回流重绘`来返回正确的值。因此，我们在修改样式的时候，最好避免使用上面列出的属性，他们都会刷新渲染队列。如果要使用它们，最好将值缓存起来。
+
 很多人不知道的是，重绘和回流其实和Event Loop 有关。
 
 1. 当 Event Loop 执行完 Microtasks 后，会判断 document 是否需要更新。因为浏览器是 60Hz 的刷新率，每 16ms 才会更新一次。
@@ -645,6 +656,8 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 以上内容来自 [HTML 文档](https://html.spec.whatwg.org/multipage/webappapis.html##event-loop-processing-model)
 
 ### 减少重绘和回流
+可以参考[你真的了解回流重绘](https://segmentfault.com/a/1190000017329980)
+
 * 使用 `translate` 替代 `top`
 ```html
 <div class="test"></div>
@@ -678,4 +691,7 @@ for (let i = 0; i < 1000; i ++) {
 * CSS 选择符从右向左匹配查找，避免 DOM 深度过深
 * 将频繁运行的动画变为图层，图层能够阻止该节点回流影响别的元素。比如对于 `video` 标签，浏览器会自动将该节点变为图层。
 ![reflow repait](./images/6.png)
+* 使用文档片段(document fragment)在当前DOM之外构建一个子树，再把它拷贝回文档
+* 将原始元素拷贝到一个脱离文档的节点中，修改节点后，再替换原始的元素
+
 
