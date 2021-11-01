@@ -741,7 +741,7 @@ var obj = {a: 1, b: {
 
 * 检查 map 中有无克隆过的对象
 * 有 – 直接返回
-* 没有 – 将当前对象作为 key, 克隆对象作为
+* 没有 – 将当前对象作为 key, 克隆对象作为 value 进行存储
 * 继续克隆
 
 ```js
@@ -1345,6 +1345,168 @@ function resolutionProcedure(promise2, x, resolve, reject) {
 
 以上就是根据 Promise / A+ 规范来实现的代码，可以通过 `promises-aplus-tests` 的完整测试
 
+
+### Promise class 实现
+[请手写代码实现一个promise](https://www.cnblogs.com/Joe-and-Joan/p/11206579.html)
+```js
+class Promise {
+    // 构造器
+    constructor(executor) {
+        // 初始化state 为等待状态
+        this.state = 'pending'
+        // 成功的值
+        this.value = undefined
+        // 失败的值
+        this.reason = undefined
+        // 成功存放的数组
+        this.onResolvedCallbacks = []
+        // 失败存放的数组
+        this.onRejectedCallbacks = []
+        // 成功
+        let resolve = value => {
+            // state 改变状态，resolve 调用就会失败
+            if (this.state === 'pending') {
+                // resolve 调用后，state 转为成功态
+                this.state = 'fulfilled'
+                // 存储成功的值
+                this.value = value
+                // 一旦resolve 执行，调用成功数组的函数
+                this.onResolvedCallbacks.forEach( fn => fn())
+            }
+        }
+        // 失败
+        let reject = reason => {
+            // state 改变状态，reject 调用就会失败
+            if (this.state === 'pending') {
+                // reject 调用后，state 转为失败态
+                this.state = 'rejected'
+                // 存储失败的原因
+                this.reason = reason
+                // 一旦reject 执行，调用失败数组的函数
+                this.onRejectedCallbacks.forEach(fn => fn())
+            }
+        }
+        try {
+            // 立即执行
+            executor(resolve, reject)
+        } catch (err) {
+            // 如果executor
+            reject(err)
+        }
+    }
+    // then 方法 有两个参数onFulfilled， onRejected
+    then(onFulfilled, onRejected) {
+        // onFulfilled 如果不是函数，就忽略onFulfilled, 直接返回value
+        onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value =>    value
+        // onRejected 如果不是函数，就忽略onRejected，直接扔出错误
+        onRejected = typeof onRejected === 'function' ? onRejected : err => { throw err }
+
+        // 声明返回的promise2
+        let promise2 = new Promise((resolve, reject) => {
+            // 状态为fulfilled， 执行onFulFilled， 传入成功的值
+            if (this.state === 'fulfilled') {
+                // 异步
+                setTimeout(() => {
+                    try {
+                        let x = onFulfilled(this.value)
+                        // resolvePromise 函数，处理自己 return 的promise 和默认的promise2 的关系
+                        resolvePromise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
+                }, 0) 
+            }
+            // 状态为rejected, 执行onRejected，传入失败的原因
+            if (this.state === 'rejected') {
+                // 异步
+                setTimeout(() => {
+                    // 如果报错
+                    try {
+                        let x = onRejected(this.reason)
+                        resolvePromise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
+                }, 0)
+            }
+            // 当状态state 为pending 时
+            if (this.state === 'pending') {
+                // onFulfilled 传入到成功数组
+                this.onResolvedCallbacks.push(() => {
+                    // 异步
+                    setTimeout(() => {
+                        try {
+                            onFulfilled(this.value)
+                            resolvePromise(promise2, x, resolve, reject)
+                        } catch (e) {
+                            reject(e)
+                        }
+                    }, 0)
+                })
+                // onRejected 传入到失败数组
+                this.onRejectedCallbacks.push(() => {
+                    // 异步
+                    setTimeout(() => {
+                        try {
+                            onRejected(this.reason)
+                            resolvePromise(promise2, x, resolve, reject)
+                        } catch (e) {
+                            reject(e)
+                        }
+                    }, 0)
+                })
+            }
+        })
+        // 返回promise， 完成链式
+        return promise2
+        
+    }
+}
+
+function resolvePromise(promise2, x, resolve, reject) {
+    // 循环引用报错
+    if (x === promise2) {
+        // reject 报错（检测到 promise 的链式循环）
+        return reject(new TypeError('Chaining cycle detected for promise'))
+    }
+    // 防止多次调用
+    let called
+    // x 不是null 且x 是对象或者函数
+    if (x != null && (typeof x === 'object' || typeof x === 'function')) {
+        try {
+            // A+ 规定，声明 then = x.then 方法
+            let then = x.then
+            // 如果then 是函数，就默认是promise
+            if (typeof x === 'function') {
+                // 就让then 执行，第一个参数是this  后面是成功的回调 和 失败的回调
+                then.call(x, y=>{
+                    // 成功和失败只能调用一个
+                    if (called) return
+                    called = true
+                    // resolve 的结果依旧是promise 那就继续解析
+                    resolvePromise(promise2, y, resolve, reject)
+                }, err => {
+                    // 成功和失败只能调用一个
+                    if(called) return
+                    called = true
+                    // 失败了就失败了
+                    reject(err)
+                })
+            } else {
+                resolve(x) // 直接成功即可
+            }
+        } catch (e) {
+            // 也属于失败
+            if (called) return
+            called = true
+            // 取then 出错了那就不要再继续执行了
+            reject(err)
+        }
+    } else {
+        resolve(x)
+    }
+}
+```
 ## Generator 实现
 Generator 是 ES6 中新增语法，和 Promise 一样，都可以用来异步编程
 ```js
