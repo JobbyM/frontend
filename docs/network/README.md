@@ -461,7 +461,7 @@ PS：DNS 是基于 UDP 做的查询
 
 4. 后台到前台的 HTTP 交互（HTTP 头部、响应码、报文结构、cookie 等，静态资源的 cookie 优化，以及编码解码，如 gzip 压缩等）
 
-5. 单独拎出来的缓存问题，HTTP 的缓存（http 缓存头部，ETag，catch-conttrol 等）
+5. 单独拎出来的缓存问题，HTTP 的缓存（http 缓存头部，ETag，cache-control 等）
 
 6. 浏览器接收到 HTTP 数据包后的解析流程（解析 html -词法分析然后解析成 dom 树、解析 css 生成 css 规则树、合并成 render 树，然后 layout 、 painting 渲染、复合图层的合成、 GPU 绘制、外联资源的处理、loaded 和 DOMContentLoaded 等） 
 
