@@ -38,6 +38,12 @@ module.exports = {
         ]
       },
       {
+        title: '性能优化',
+        children: [
+          '/optimization/',
+        ]
+      },
+      {
         title: '计算机通识',
         children: [
           '/network/',
