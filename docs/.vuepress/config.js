@@ -41,6 +41,7 @@ module.exports = {
         title: '性能优化',
         children: [
           '/optimization/',
+          '/rail/',
         ]
       },
       {
