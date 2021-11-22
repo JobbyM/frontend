@@ -42,6 +42,7 @@ module.exports = {
         children: [
           '/optimization/',
           '/rail/',
+          '/metrics/',
         ]
       },
       {
